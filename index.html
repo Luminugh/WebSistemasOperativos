@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Institución Wilkes — Sistema de Control de Asistencia</title>
+<meta name="description" content="Sistema de marcación del personal de la Institución Wilkes.">
+<style>
+  :root{
+    --azul:#0f3d6e;
+    --azul-claro:#1d6fb8;
+    --acento:#f0a500;
+    --texto:#1f2937;
+    --texto-suave:#5b6b7c;
+    --fondo:#f4f7fb;
+    --blanco:#ffffff;
+    --borde:#e2e8f0;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:var(--fondo);
+    color:var(--texto);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Encabezado ---------- */
+  header{
+    background:linear-gradient(135deg,var(--azul) 0%,var(--azul-claro) 100%);
+    color:#fff;
+    padding:18px 0;
+    box-shadow:0 2px 12px rgba(15,61,110,.25);
+  }
+  .contenedor{
+    width:min(1080px,92%);
+    margin:0 auto;
+  }
+  .barra{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .marca{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .escudo{
+    width:46px;height:46px;
+    border-radius:12px;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.35);
+    display:grid;place-items:center;
+    font-weight:700;font-size:1.05rem;
+    letter-spacing:.5px;
+  }
+  .marca h1{
+    font-size:1.05rem;
+    font-weight:600;
+    letter-spacing:.4px;
+    line-height:1.25;
+  }
+  .marca span{
+    display:block;
+    font-size:.78rem;
+    font-weight:400;
+    opacity:.85;
+  }
+  .acciones-cabecera{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .windows{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.9px;
+    text-transform:uppercase;
+    color:#fff;
+    background:#0078d4;
+    border:1px solid rgba(255,255,255,.25);
+    padding:7px 14px;
+    border-radius:999px;
+    box-shadow:0 3px 12px rgba(0,120,212,.35);
+  }
+  .windows svg{
+    width:14px;
+    height:14px;
+    flex:none;
+  }
+  .estado{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:.82rem;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.3);
+    padding:7px 14px;
+    border-radius:999px;
+  }
+  .punto{
+    width:9px;height:9px;border-radius:50%;
+    background:#4ade80;
+    box-shadow:0 0 0 0 rgba(74,222,128,.7);
+    animation:pulso 2s infinite;
+  }
+  @keyframes pulso{
+    0%{box-shadow:0 0 0 0 rgba(74,222,128,.6)}
+    70%{box-shadow:0 0 0 9px rgba(74,222,128,0)}
+    100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:64px 0 48px;
+    text-align:center;
+  }
+  .hero .etiqueta{
+    display:inline-block;
+    font-size:.75rem;
+    font-weight:600;
+    letter-spacing:1.6px;
+    text-transform:uppercase;
+    color:var(--azul-claro);
+    background:#e6f0fa;
+    padding:6px 16px;
+    border-radius:999px;
+    margin-bottom:20px;
+  }
+  .hero h2{
+    font-size:clamp(1.8rem,4.5vw,2.9rem);
+    line-height:1.15;
+    color:var(--azul);
+    font-weight:700;
+    letter-spacing:-.5px;
+    margin-bottom:16px;
+  }
+  .hero p{
+    max-width:620px;
+    margin:0 auto;
+    color:var(--texto-suave);
+    font-size:1.05rem;
+  }
+
+  /* ---------- Reloj ---------- */
+  .reloj{
+    margin:34px auto 0;
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    background:var(--blanco);
+    border:1px solid var(--borde);
+    border-radius:18px;
+    padding:22px 44px;
+    box-shadow:0 10px 30px rgba(15,61,110,.08);
+  }
+  .reloj .hora{
+    font-size:clamp(1.9rem,5vw,2.6rem);
+    font-weight:700;
+    color:var(--azul);
+    font-variant-numeric:tabular-nums;
+    letter-spacing:1px;
+  }
+  .reloj .fecha{
+    font-size:.85rem;
+    color:var(--texto-suave);
+    text-transform:capitalize;
+    margin-top:2px;
+  }
+
+  /* ---------- Tarjetas de datos ---------- */
+  section{padding:12px 0}
+  .titulo-seccion{
+    text-align:center;
+    font-size:1.35rem;
+    color:var(--azul);
+    font-weight:700;
+    margin:40px 0 26px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
+  }
+  .tarjeta{
+    background:var(--blanco);
+    border:1px solid var(--borde);
+    border-radius:16px;
+    padding:26px;
+    box-shadow:0 4px 18px rgba(15,61,110,.05);
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .tarjeta:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 28px rgba(15,61,110,.11);
+  }
+  .icono{
+    width:46px;height:46px;
+    border-radius:12px;
+    display:grid;place-items:center;
+    background:#e6f0fa;
+    color:var(--azul-claro);
+    font-size:1.35rem;
+    margin-bottom:16px;
+  }
+  .tarjeta h3{
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    color:var(--texto-suave);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  .tarjeta .valor{
+    font-size:1.15rem;
+    font-weight:700;
+    color:var(--texto);
+    word-break:break-word;
+  }
+  .tarjeta .nota{
+    font-size:.85rem;
+    color:var(--texto-suave);
+    margin-top:8px;
+  }
+  .valor.ip{
+    font-family:"Consolas","Courier New",monospace;
+    color:var(--azul);
+    letter-spacing:.5px;
+  }
+
+  /* ---------- Funciones ---------- */
+  .funciones .tarjeta{text-align:left}
+  .funciones .icono{margin-bottom:14px}
+  .funciones h3{
+    text-transform:none;
+    letter-spacing:0;
+    font-size:1.05rem;
+    color:var(--azul);
+    margin-bottom:8px;
+  }
+  .funciones p{
+    font-size:.92rem;
+    color:var(--texto-suave);
+  }
+
+  /* ---------- Aviso ---------- */
+  .aviso{
+    margin:44px 0 0;
+    background:linear-gradient(135deg,#fff8e6,#fffdf7);
+    border:1px solid #f5d78e;
+    border-left:5px solid var(--acento);
+    border-radius:14px;
+    padding:20px 24px;
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+  .aviso .simbolo{
+    font-size:1.4rem;
+    line-height:1;
+  }
+  .aviso strong{display:block;color:#8a6100;margin-bottom:3px;font-size:.95rem}
+  .aviso p{font-size:.9rem;color:#7a6420;margin:0}
+
+  /* ---------- Pie ---------- */
+  footer{
+    margin-top:64px;
+    background:var(--azul);
+    color:rgba(255,255,255,.82);
+    padding:30px 0;
+    font-size:.85rem;
+  }
+  .pie{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .pie .nombre{font-weight:600;color:#fff}
+  .pie .tenue{opacity:.75}
+
+  @media (max-width:520px){
+    .hero{padding:44px 0 32px}
+    .reloj{padding:18px 28px;width:100%}
+    .barra{justify-content:center;text-align:center}
+    .marca{flex-direction:column;text-align:center}
+    .acciones-cabecera{justify-content:center}
+    .pie{justify-content:center;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="contenedor barra">
+    <div class="marca">
+      <div class="escudo">IW</div>
+      <div>
+        <h1>INSTITUCIÓN WILKES
+          <span>Sistema de Control de Asistencia</span>
+        </h1>
+      </div>
+    </div>
+    <div class="acciones-cabecera">
+      <span class="windows" title="Servidor Windows Server 2022">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <rect x="2.5" y="2.5" width="8.6" height="8.6" rx="0.6"/>
+          <rect x="12.9" y="2.5" width="8.6" height="8.6" rx="0.6"/>
+          <rect x="2.5" y="12.9" width="8.6" height="8.6" rx="0.6"/>
+          <rect x="12.9" y="12.9" width="8.6" height="8.6" rx="0.6"/>
+        </svg>
+        Windows Server 2022
+      </span>
+      <div class="estado"><span class="punto"></span> Servicio en línea</div>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+
+  <section class="hero">
+    <span class="etiqueta">Portal del personal</span>
+    <h2>Bienvenido al sistema<br>de marcación del personal</h2>
+    <p>
+      Registre su entrada y salida de forma rápida y segura. Este portal
+      centraliza el control de asistencia de nuestra institución.
+    </p>
+
+    <div class="reloj">
+      <div class="hora" id="hora">--:--:--</div>
+      <div class="fecha" id="fecha">Cargando fecha…</div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="titulo-seccion">Información del sistema</h2>
+    <div class="grid">
+
+      <article class="tarjeta">
+        <div class="icono">🖥️</div>
+        <h3>Servidor web principal</h3>
+        <div class="valor">Windows Server 2022</div>
+        <p class="nota">Plataforma que aloja el servicio de marcación.</p>
+      </article>
+
+      <article class="tarjeta">
+        <div class="icono">🌐</div>
+        <h3>Dirección IP</h3>
+        <div class="valor ip">192.168.0.4</div>
+        <p class="nota">Acceso dentro de la red institucional.</p>
+      </article>
+
+      <article class="tarjeta">
+        <div class="icono">🔒</div>
+        <h3>Disponibilidad</h3>
+        <div class="valor">24 / 7</div>
+        <p class="nota">Servicio disponible para el registro de asistencia.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="funciones">
+    <h2 class="titulo-seccion">¿Qué puede hacer en este portal?</h2>
+    <div class="grid">
+
+      <article class="tarjeta">
+        <div class="icono">✅</div>
+        <h3>Marcar entrada y salida</h3>
+        <p>Registre su jornada laboral con un solo clic, en cualquier momento del día.</p>
+      </article>
+
+      <article class="tarjeta">
+        <div class="icono">📋</div>
+        <h3>Consultar su historial</h3>
+        <p>Revise sus marcaciones anteriores y verifique que sus registros estén completos.</p>
+      </article>
+
+      <article class="tarjeta">
+        <div class="icono">⏱️</div>
+        <h3>Control de horarios</h3>
+        <p>El sistema calcula automáticamente sus horas trabajadas y sus tardanzas.</p>
+      </article>
+
+      <article class="tarjeta">
+        <div class="icono">📞</div>
+        <h3>Soporte</h3>
+        <p>Ante cualquier inconveniente, comuníquese con el área de informática.</p>
+      </article>
+
+    </div>
+
+    <div class="aviso">
+      <div class="simbolo">⚠️</div>
+      <div>
+        <strong>Recomendación</strong>
+        <p>Realice sus marcaciones únicamente desde la red institucional. Verifique siempre la hora mostrada antes de registrar su asistencia.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="contenedor pie">
+    <div class="nombre">Institución Wilkes · Sistema de Control de Asistencia</div>
+    <div class="tenue">Servidor: Windows Server 2022 · 192.168.0.4</div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    var meses = ["enero","febrero","marzo","abril","mayo","junio","julio",
+                 "agosto","septiembre","octubre","noviembre","diciembre"];
+
+    function dosDigitos(n) { return String(n).padStart(2, "0"); }
+
+    function actualizar() {
+      var ahora = new Date();
+      document.getElementById("hora").textContent =
+        dosDigitos(ahora.getHours()) + ":" +
+        dosDigitos(ahora.getMinutes()) + ":" +
+        dosDigitos(ahora.getSeconds());
+
+      document.getElementById("fecha").textContent =
+        dias[ahora.getDay()] + ", " + ahora.getDate() + " de " +
+        meses[ahora.getMonth()] + " de " + ahora.getFullYear();
+    }
+
+    actualizar();
+    setInterval(actualizar, 1000);
+  })();
+</script>
+
+</body>
+</html>
